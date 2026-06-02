@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>岗位供应概率列表 - 表格版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -40,6 +40,27 @@
         }
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(15, 23, 42, 0.28);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-responsive table {
+            min-width: 720px;
+        }
+
+        .table-responsive th,
+        .table-responsive td {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive th,
+            .table-responsive td {
+                white-space: normal;
+            }
         }
 
         .fade-in {
@@ -91,7 +112,7 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-    <div class="max-w-6xl mx-auto px-6 py-10">
+    <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-10">
         <div class="text-center mb-10">
             <h1 class="text-4xl font-semibold text-slate-950 mb-3 tracking-tight">
                 岗位供应列表
@@ -104,18 +125,18 @@
         <!-- 全部岗位 Tab -->
         <div id="contentAllJobs" class="tab-content active">
         <!-- 筛选栏 -->
-        <div class="bg-white p-8 rounded-[32px] shadow-sm mb-8 border border-slate-200">
+        <div class="bg-white p-6 rounded-[32px] shadow-sm mb-8 border border-slate-200 sm:p-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div>
                     <div class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">智能筛选</div>
                     <div class="mt-2 text-xl font-semibold text-slate-950">快速定位目标岗位</div>
                 </div>
-                <button onclick="clearFilters()" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl font-medium shadow-sm transition duration-200">
+                <button onclick="clearFilters()" class="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl font-medium shadow-sm transition duration-200">
                     <i class="fas fa-undo"></i>
                     清空筛选
                 </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                 <div class="space-y-2 min-w-0">
                     <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">岗位类型</label>
                     <select id="filterType" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
@@ -137,19 +158,6 @@
                     <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">工作城市</label>
                     <select id="filterCity" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
                         <option value="">全部城市</option>
-                        <option value="全国">全国</option>
-                        <option value="北京">北京</option>
-                        <option value="北京hk">北京hk</option>
-                        <option value="上海">上海</option>
-                        <option value="深圳">深圳</option>
-                        <option value="广州">广州</option>
-                        <option value="重庆">重庆</option>
-                        <option value="徐州">徐州</option>
-                        <option value="香港">香港</option>
-                        <option value="天津">天津</option>
-                        <option value="石家庄">石家庄</option>
-                        <option value="杭州">杭州</option>
-                        <option value="河北">河北</option>
                     </select>
                 </div>
                 <div class="space-y-2 min-w-0">
@@ -168,8 +176,9 @@
         </div>
 
         <div class="bg-white rounded-[32px] shadow-sm overflow-hidden border border-slate-200">
-            <table class="w-full text-sm" id="dataTable">
-                <thead class="bg-slate-950 text-white">
+            <div class="table-responsive">
+                <table class="w-full text-sm" id="dataTable">
+                    <thead class="bg-slate-950 text-white">
                     <tr>
                         <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">概率等级</th>
                         <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">公司 / 单位</th>
@@ -206,7 +215,11 @@
         // ============== 页面初始化 ==============
         document.addEventListener('DOMContentLoaded', function() {
             // 添加淡入动画
-            document.querySelector('.max-w-7xl').classList.add('fade-in');
+            const mainContainer = document.querySelector('.max-w-6xl');
+            if (mainContainer) mainContainer.classList.add('fade-in');
+
+            // 初始化城市筛选项
+            populateCityFilter();
 
             // 初始化数据
             renderTable(jobs);
@@ -248,37 +261,37 @@
     {level:"100", company:"鲁迅文化基金会", city:"上海/绍兴", salary:"40-45", remark:"秘书处助理", type:"other"},
     {level:"100", company:"保利旗下食品发酵研究院", city:"北京", salary:"55", remark:"官网岗位", type:"other"},
     {level:"100", company:"重庆渝富集团及下属子公司", city:"重庆", salary:"60", remark:"职能类", type:"other"},
-    {level:"100", company:"北京电子量检测装备有限责任公司（兆维集团）", city:"北京", salary:"40", remark:"战略发展岗、量检测战略专员（理工科要求）", type:"other"},
+    {level:"100", company:"北京电子量检测装备有限责任公司（曾用名：兆维集团）", city:"北京", salary:"40", remark:"战略发展岗，量检测战略专员（理工科要求）", type:"other"},
     {level:"100", company:"上海航服/航空下属子公司", city:"北京/上海", salary:"30-35", remark:"地勤/行政", type:"other"},
-    {level:"100", company:"首钢集团", city:"北京", salary:"50", remark:"职能岗/官网招聘岗位（应届校招）", type:"other"},
-    {level:"100", company:"北师大亚太学校", city:"北京", salary:"50", remark:"学科教师/学前/生活教师/职员/外籍教师（需教资）", type:"other"},
-    {level:"100", company:"徐州观音国际机场有限责任公司", city:"徐州", salary:"20", remark:"客运/文员/运维/安棄", type:"other"},
-    {level:"100", company:"徐州产城发展集有限公司", city:"徐州", salary:"25-27", remark:"", type:"other"},
+    {level:"100", company:"首钢集团", city:"北京", salary:"50", remark:"职能岗/官网招聘岗位（应届校招，24-26 年毕业未缴纳社保的也可以看）", type:"other"},
+    {level:"100", company:"北师大亚太学校", city:"北京", salary:"50", remark:"学科教师（需要教资）/学前、生活教师/职员/外籍教师", type:"other"},
+    {level:"100", company:"徐州观音国际机场有限责任公司", city:"徐州", salary:"20", remark:"客运/文员/运维/安检", type:"other"},
+    {level:"100", company:"徐州产城发展集有限公司", city:"徐州", salary:"25-27", remark:"招聘公告", type:"other"},
     {level:"100", company:"徐州国盛控股集团有限公司", city:"徐州", salary:"25-27", remark:"融资/财务管理/法务/战略/工程管理", type:"other"},
-    {level:"100", company:"徐州市新盛投资控股有限公司", city:"徐州", salary:"25-27", remark:"财务/人事/纪委/人力党事会/支部会计", type:"other"},
-    {level:"100", company:"徐州报业传媒集团", city:"徐州", salary:"23", remark:"文字记者，编剧文案", type:"other"},
-    {level:"100", company:"千里科技", city:"重庆", salary:"18", remark:"数据标注/其他专业相关（吉利控股旗下）", type:"other"},
+    {level:"100", company:"徐州市新盛投资控股有限公司", city:"徐州", salary:"25-27", remark:"财务/人事/纪委/人力党支部/支部会计", type:"other"},
+    {level:"100", company:"徐州报业传媒集团及其直属全资二级子公司", city:"徐州", salary:"23", remark:"文字记者，编剧文案", type:"other"},
+    {level:"100", company:"千里科技", city:"重庆", salary:"18", remark:"数据标注/其他专业相关（是吉利控股旗下、聚焦 AI+车 战略的 A 股上市智能出行科技公司，前身为力帆科技）", type:"other"},
     {level:"100", company:"山西航空产业综合馆", city:"太原", salary:"25", remark:"市场岗/直播运营岗/前台行政/主播/课程讲师/财务岗", type:"other"},
     {level:"100", company:"北京市政建筑设计研究院", city:"北京", salary:"35", remark:"规划建筑师/景观/设计助理", type:"other"},
     {level:"100", company:"北京市属博物馆", city:"北京", salary:"18", remark:"售票/文创销售/后勤", type:"other"},
-    {level:"100", company:"北京国际合作技术中心有限公司", city:"北京", salary:"65", remark:"职能岗", type:"other"},
+    {level:"100", company:"北京国际合作技术中心有限公司及下属单位", city:"北京", salary:"65", remark:"职能岗", type:"other"},
     {level:"100", company:"网联清算有限公司", city:"北京", salary:"65", remark:"采购岗", type:"other"},
     {level:"100", company:"中铁十九局集团矿业投资有限公司", city:"海外", salary:"75", remark:"海外项目", type:"other"},
     {level:"100", company:"中国工商银行/中国农业银行", city:"河北", salary:"25.5", remark:"支行相关岗位", type:"other"},
     {level:"100", company:"央视下属国资传媒公司", city:"北京", salary:"50", remark:"拍摄/剪辑等", type:"other"},
-    {level:"100", company:"广晟/广物/广业", city:"广州/深圳", salary:"65-75", remark:"投资岗/运营岗", type:"other"},
+    {level:"100", company:"广晟/广物/广业", city:"广州/深圳", salary:"65-75", remark:"投资岗/运营岗/（不挑岗位）", type:"other"},
     {level:"100", company:"招商信诺健康管理有限公司", city:"上海", salary:"35-45", remark:"职能岗", type:"other"},
-    {level:"100", company:"中投保科技融资抵保有限公司", city:"北京", salary:"40", remark:"业务助理岗", type:"other"},
+    {level:"100", company:"中投保科技融资担保有限公司", city:"北京", salary:"40", remark:"业务助理岗", type:"other"},
     {level:"100", company:"国家开发投资集团下属子公司", city:"北京", salary:"35-50", remark:"职能岗/投资岗", type:"other"},
-    {level:"100", company:"北京中科院各研究所", city:"北京", salary:"45-65", remark:"自动化所、电工所、空天院等（岢聘/项目聘/人才派遭）", type:"other"},
-    {level:"100", company:"中国食品报社下属子公司", city:"贵州/长沙", salary:"32", remark:"总经理助理/会计/采集专员/制作专员/运营专员等", type:"other"},
+    {level:"100", company:"北京中科院各研究所", city:"北京", salary:"45-65", remark:"自动化所、电工所、空天院等（岗聘/项目聘/人才派遣；博士或优秀硕士/本科生专业对口）", type:"other"},
+    {level:"100", company:"中国食品报社下属子公司", city:"全国", salary:"32", remark:"总经理助理/会计/采集专员/制作专员/运营专员等", type:"other"},
 
         // ==================== 金融部分（非常稳 100%） ====================
-    {level:"100", company:"浦发银行", city:"北上广深+江浙沪+安徽合肥", salary:"35-55", remark:"分行55，支行35", type:"finance"},
-    {level:"100", company:"重庆农商行", city:"重庆", salary:"45-50", remark:"总行/分行", type:"finance"},
-    {level:"100", company:"天启资本", city:"北京/上海/无锡", salary:"40-50", remark:"", type:"finance"},
+    {level:"100", company:"浦发银行分行/支行", city:"全国", salary:"35-55", remark:"分行 55，支行 35；其他省会分行/支行需问，大概率较难", type:"finance"},
+    {level:"100", company:"重庆农商行总行/分行", city:"重庆", salary:"45-50", remark:"", type:"finance"},
+    {level:"100", company:"天启资本", city:"北京/上海/无锡", salary:"40-50", remark:"根据简历", type:"finance"},
     {level:"100", company:"正海资本", city:"上海", salary:"70", remark:"", type:"finance"},
-    {level:"100", company:"中夏资本", city:"北京", salary:"40-50", remark:"投资岗/投资运营岗/IR岗/募资岗", type:"finance"},
+    {level:"100", company:"中夏资本", city:"北京", salary:"40-50", remark:"投资岗方向/投资运营岗方向/IR岗方向/募资岗方向", type:"finance"},
     {level:"100", company:"首信资产", city:"香港", salary:"55", remark:"", type:"finance"},
     {level:"100", company:"重庆渝富集团", city:"重庆", salary:"60", remark:"", type:"finance"},
     {level:"100", company:"启迪控股下属子基金", city:"北京", salary:"45", remark:"投资岗", type:"finance"},
@@ -290,15 +303,15 @@
     {level:"100", company:"梅花创投", city:"北京/合肥", salary:"45-50", remark:"投资岗", type:"finance"},
     {level:"100", company:"东方行知资本", city:"北京", salary:"45", remark:"投资/总助/投后岗", type:"finance"},
     {level:"100", company:"拉卡拉", city:"北京", salary:"40-45", remark:"金融资深分析师/证券事务经理", type:"finance"},
-    {level:"100", company:"陆家嘴国际信托", city:"上海", salary:"50", remark:"资产管理部信托助理", type:"finance"},
-    {level:"100", company:"中金投行部", city:"上海/北京", salary:"120", remark:"债承岗", type:"finance"},
+    {level:"100", company:"陆家嘴国际信托", city:"上海/北京", salary:"50", remark:"资产管理部信托助理", type:"finance"},
+    {level:"100", company:"中金投行部", city:"上海/北京", salary:"120", remark:"债承岗、上海、考察资质", type:"finance"},
     {level:"100", company:"恒业元朔", city:"深圳", salary:"30", remark:"投资岗/IR", type:"finance"},
     {level:"100", company:"华龙证券", city:"北京", salary:"45", remark:"投行部岗位", type:"finance"},
-    {level:"100", company:"枫承资本", city:"北京/上海/深圳", salary:"35-40", remark:"投资岗/投资者关系/投资实习岗", type:"finance"},
+    {level:"100", company:"枫承资本", city:"北京/上海/深圳", salary:"35-40", remark:"投资岗/投资者关系/投资实习岗（有留用机会）", type:"finance"},
     {level:"100", company:"中信建投利信资本", city:"北京", salary:"70", remark:"投资岗", type:"finance"},
     {level:"100", company:"建信天然资本", city:"北京", salary:"60", remark:"投资岗", type:"finance"},
     {level:"100", company:"中国平安人寿", city:"北京", salary:"55-60", remark:"管培生", type:"finance"},
-    {level:"100", company:"复星锐正", city:"北京/上海/深圳", salary:"30-45", remark:"投资岗", type:"finance"},
+    {level:"100", company:"复星锐正", city:"北京/上海/深圳", salary:"45", remark:"投资岗", type:"finance"},
     {level:"100", company:"广发证券", city:"北京/上海/深圳", salary:"55-65", remark:"投行/研究/专业相关岗位", type:"finance"},
     {level:"100", company:"招商证券", city:"北京/上海/深圳", salary:"55-65", remark:"投行/研究/专业相关岗位", type:"finance"},
     {level:"100", company:"中信证券", city:"北京/上海/深圳", salary:"65-75", remark:"投行/研究/专业相关岗位", type:"finance"},
@@ -306,22 +319,25 @@
     {level:"100", company:"财达证券", city:"北京/上海/深圳", salary:"55-65", remark:"投行/研究/专业相关岗位", type:"finance"},
     {level:"100", company:"东吴证券", city:"北京/上海/深圳", salary:"45-50", remark:"投行/研究/专业相关岗位", type:"finance"},
     {level:"100", company:"富途牛牛", city:"新加坡", salary:"30", remark:"财富管理岗", type:"finance"},
-    {level:"100", company:"海川证券", city:"北京/上海/深圳/香港", salary:"45-60", remark:"投行项目承揽/医药研究员/AI制药/投行承销等", type:"finance"},
+    {level:"100", company:"海川证券", city:"北京/上海/深圳/香港", salary:"45-60", remark:"投行项目承揽-北京/医药研究员(AI制药方向)-北京/投行承销-香港/香港6号牌承销-香港/金融账户管理-香港/境外基金运营-香港/投资银行业务-深圳 北京/深圳（45-50）/香港（55-60）", type:"finance"},
+    {level:"100", company:"幸福人寿保险-资管部", city:"北京", salary:"55-60", remark:"研究员（分析师）/项目经理（投后管理）", type:"finance"},
+    {level:"100", company:"华京投资（中国电子科技集团控股投资平台）", city:"上海", salary:"45", remark:"投资岗", type:"finance"},
+    {level:"100", company:"中信建投证券", city:"上海", salary:"45", remark:"机构业务（to b）岗", type:"finance"},
 
     // 其他
     {level:"100", company:"北京泰德制药", city:"北京", salary:"65", remark:"医药专业相关岗"},
-    {level:"100", company:"中核集团北京", city:"北京hk", salary:"130", remark:"男生优先，理工科"},
-    {level:"100", company:"首钢集团下属子公司", city:"北京hk", salary:"110+", remark:""},
-    {level:"100", company:"北京电子量检测/北京电控总部", city:"北京hk", salary:"80-90+", remark:"理工科要求"},
+    {level:"100", company:"中核集团北京", city:"北京hk", salary:"130", remark:"男生优先，理工科，不要留学生"},
+    {level:"100", company:"首钢集团下属子公司", city:"北京hk", salary:"110", remark:""},
+    {level:"100", company:"北京电子量检测/北京电控总部及下属单位", city:"北京hk", salary:"80-85+", remark:"理工科要求"},
     {level:"100", company:"中国移动下属青牛股份", city:"北京hk", salary:"80-90+", remark:"QS300 以前"},
-    {level:"100", company:"民营高科技企业", city:"北京hk", salary:"80-90+", remark:""},
+    {level:"100", company:"民营高科技企业（Tracy）", city:"北京hk", salary:"80", remark:""},
 
 
 
         // ==================== 二. 非金融.很稳：80%以上 ====================
 
     // 非金融部分
-    {level:"80", company:"北京农商行总行", city:"北京", salary:"60", remark:"社招、校招"},
+    {level:"80", company:"北京农商行总行", city:"北京", salary:"60", remark:"社招、校招，官网招聘岗位"},
     {level:"80", company:"水利部澜湄水资源合作中心", city:"北京", salary:"35", remark:"综合处（水利专业相关岗位）"},
     {level:"80", company:"中国资源循环集团有限公司", city:"天津", salary:"60", remark:"职能岗"},
     {level:"80", company:"江苏凤凰传媒集团及下属", city:"南京", salary:"45", remark:"行政类/编辑运营类/技术类"},
@@ -334,7 +350,13 @@
     {level:"80", company:"北汽集团", city:"北京", salary:"38", remark:"官网在招岗位"},
     {level:"80", company:"中国融通下属二级", city:"北京/天津", salary:"50", remark:"行政文员"},
     {level:"80", company:"中青旅下属", city:"北京", salary:"40", remark:"签证/采购/销售"},
-    {level:"80", company:"小牛传媒集团", city:"上海", salary:"18", remark:"媒介/招聘/财务/内容运营"},
+    {level:"80", company:"广东能源集团天然气有限公司", city:"广州", salary:"55", remark:"油气类技术岗/项目岗", type:"other"},
+    {level:"80", company:"湖南中核肿瘤医院", city:"长沙", salary:"35-38", remark:"行政", type:"other"},
+    {level:"80", company:"中国邮政湖南分公司", city:"长沙", salary:"38", remark:"金融管理岗/揽投部经历/仓库管理岗", type:"other"},
+    {level:"80", company:"中国电科发展战略研究中心", city:"北京", salary:"55", remark:"新闻宣传岗", type:"other"},
+    {level:"80", company:"华润文化体育发展有限公司北京分公司", city:"北京", salary:"40", remark:"综合行政", type:"other"},
+    {level:"80", company:"上海小牛传媒集团", city:"上海", salary:"18", remark:"媒介/招聘/财务/内容运营", type:"other"},
+    {level:"80", company:"知乎", city:"北京", salary:"27", remark:"新媒体运营 27届应届毕业生实习转正：33", type:"other"},
 
     // 2. 金融
     {level:"80", company:"中信金租", city:"北京", salary:"50", remark:"纪检岗/宣传岗/人力资源/项目审批/业务岗/融资岗/系统开发岗", type:"finance"},
@@ -359,85 +381,134 @@
     {level:"80", company:"北京泰德制药", city:"北京hk", salary:"130", remark:"医药相关岗"},
     {level:"80", company:"网联清算", city:"北京hk", salary:"130", remark:"采购岗"},
     {level:"80", company:"中铁十九局集团矿业投资有限公司", city:"北京hk", salary:"150", remark:"海外项目"},
+    {level:"80", company:"中化集团财务有限责任公司", city:"北京", salary:"180", remark:"管培生", type:"finance"},
 
 
     // ==================== 三. 非金融.有很大概率：60%以上 ====================
-    // 非金融部分
-    {level:"60", company:"中国储备粮管理集团", city:"全国", salary:"50", remark:"简历面试定岗"},
-    {level:"60", company:"吉利汽车", city:"全国", salary:"30", remark:"人选符合招聘需求"},
-    {level:"60", company:"中核集团下属物业公司", city:"北京", salary:"30", remark:"简历面试定岗"},
-    {level:"60", company:"人社部能建中心/社会保障中心", city:"北京", salary:"35", remark:"培训管理岗/接待，有讲解经验.形象好"},
-        // ==================== 三. 有很大概率：60%以上 ====================
-
     // 金融部分
-    {level:"60", company:"黑蚁资本", city:"上海", salary:"55", remark:"投资岗"},
-    {level:"60", company:"灵均投资/幻方量化/九坤投资等", city:"", salary:"55", remark:"量化相关"},
-    {level:"60", company:"万银资产", city:"杭州", salary:"55", remark:"投资经理"},
-    {level:"60", company:"疆亘资本", city:"北京", salary:"30-35", remark:"投资岗"},
-    {level:"60", company:"天津银行", city:"天津", salary:"40-50", remark:"管培生（支行/分行）"},
-    {level:"60", company:"云启资本", city:"北京/上海", salary:"50-55", remark:"投资岗方向（双币基金）"},
-    {level:"60", company:"盈新发展", city:"北京", salary:"40-45", remark:"投资经理岗位"},
-    {level:"60", company:"经纬创投", city:"北京/上海", salary:"70", remark:"投资分析师岗"},
-    {level:"60", company:"海邦投资", city:"杭州", salary:"55", remark:"投资经理（医疗器械方向）"},
-    {level:"60", company:"方广资本", city:"上海/深圳", salary:"55", remark:"投资经理（双币基金）"},
-    {level:"60", company:"嘉实基金", city:"北京", salary:"105", remark:"科技产品经理、量化策略分析师"},
-    {level:"60", company:"无锡创投下属子公司（国联金投致源）/锡创投", city:"北京", salary:"45", remark:"投资岗"},
-    {level:"60", company:"天鹰资本", city:"北京", salary:"50", remark:"投资岗"},
-    {level:"60", company:"中国旅游集团投资和资产管理有限公司", city:"北京", salary:"45", remark:"基金管理岗"},
-    {level:"60", company:"追觅创投", city:"上海", salary:"50-55", remark:"量化交易岗/CVC战投岗"},
-    {level:"60", company:"银河证券总部", city:"北京", salary:"65", remark:"FICC业务总部-固收交易员"},
-    {level:"60", company:"万信融智（工信部下属基金）", city:"北京", salary:"50", remark:"投资岗"},
-    {level:"60", company:"华夏基金", city:"北京", salary:"70", remark:"研究员/工程师/产品经理/分析师等多岗位"},
-    {level:"60", company:"中信证券-营业部", city:"石家庄/唐山", salary:"25", remark:"业务岗"},
-    {level:"60", company:"西南证券", city:"重庆", salary:"40", remark:"研究、风控、后台岗"},
-    {level:"60", company:"浦发香港分行/浦银国际", city:"香港", salary:"65", remark:"管培生/信息科技类岗位"},
-    {level:"60", company:"兴业金租", city:"北京/全国", salary:"40", remark:"管培生/客户经理/资产管理岗等"},
-    {level:"60", company:"汇天诚基金", city:"北京/香港", salary:"30", remark:"投资经理助理"},
-    {level:"60", company:"银河证券", city:"北京", salary:"20", remark:"营业部-运营岗"},
-    {level:"60", company:"北京方信资本", city:"北京", salary:"35", remark:"投资岗"},
-    {level:"60", company:"首程控股（首钢集团下属）", city:"北京", salary:"40", remark:"战投部-投资岗"},
-    {level:"60", company:"祥峰投资（淡马锡控股）", city:"北京", salary:"35", remark:"投资岗"},
-    {level:"60", company:"新鼎资本", city:"北京", salary:"35", remark:"投资分析师"},
-    {level:"60", company:"盛石资本", city:"上海", salary:"65", remark:"投资岗（国资PE）"},
-    {level:"60", company:"奇点资本", city:"北京", salary:"50-60", remark:"投资岗"},
-    {level:"60", company:"神骐资本", city:"北京", salary:"40", remark:"投资岗（58同城旗下）"},
-    {level:"60", company:"商汤科技", city:"北京/上海", salary:"60", remark:"投资岗"},
-    {level:"60", company:"诺德基金", city:"上海", salary:"45", remark:"专业相关岗位"},
-    {level:"60", company:"申万宏源", city:"深圳", salary:"45-55", remark:"机构业务分析师"},
-    {level:"60", company:"财达证券", city:"上海/深圳", salary:"45", remark:"债券承揽、承做岗、股权承揽等"},
-    {level:"60", company:"青英汇资本", city:"北京", salary:"35", remark:"投资岗（实习转正）"},
-    {level:"60", company:"国富量子", city:"香港", salary:"55", remark:"投融资/AI技术岗"},
-    {level:"60", company:"长江证券/海通证券", city:"香港", salary:"55", remark:"投行/研究岗"},
-    {level:"60", company:"汇丰银行/渣打银行", city:"香港", salary:"50", remark:""},
-    {level:"60", company:"富域资本", city:"香港", salary:"30", remark:"投融资岗"},
-    {level:"60", company:"鼎辉投资", city:"北京", salary:"70-80", remark:"投资岗"},
-    {level:"60", company:"老鹰基金", city:"北京", salary:"40-50", remark:"投资岗"},
-    {level:"60", company:"金浦投资", city:"上海", salary:"65-75", remark:"投资岗"},
-    {level:"60", company:"东方富海", city:"深圳/北京", salary:"60", remark:"投资岗"},
-    {level:"60", company:"弘卓资本", city:"北京", salary:"55-65", remark:"投资岗"},
-    {level:"60", company:"CPE 源峰", city:"北京", salary:"70-80", remark:"投资岗"},
-    {level:"60", company:"聚宽投资", city:"北京/广州/深圳/香港", salary:"35-40", remark:"AI算法专家/量化研究员/基金运营等"},
-    {level:"60", company:"中信期货总部", city:"上海", salary:"40", remark:"机构业务岗"},
-    {level:"60", company:"琥珀资本（深信服CVC）", city:"深圳/北京", salary:"40-45", remark:"投资岗（实习留用/全职）"},
-    {level:"60", company:"友财投资", city:"北京", salary:"30", remark:"投资岗"},
-    {level:"60", company:"国石智达", city:"北京", salary:"50", remark:""},
-    {level:"60", company:"碧澄能源", city:"广州", salary:"50-55", remark:"投资助理"},
-    {level:"60", company:"经纬创投", city:"北京", salary:"70", remark:"投资岗"},
-    {level:"60", company:"招商致远", city:"北京/深圳", salary:"60-65", remark:"投资岗/战略业务岗/会计岗"},
-    {level:"60", company:"首都大健康产业基金", city:"北京", salary:"45-55", remark:"投资岗/投资运营/投后岗"},
-    {level:"60", company:"华盖资本", city:"北京", salary:"45-55", remark:"投资岗/IR岗"},
-    {level:"60", company:"汉能投资", city:"北京/上海/深圳", salary:"55-65", remark:"投资岗/IR岗"},
-    {level:"60", company:"中再保险资管", city:"北京", salary:"65-75", remark:"专业相关岗"},
-    {level:"60", company:"深圳诺辉资本", city:"深圳", salary:"35", remark:""},
+    {level:"60", company:"黑蚁资本", city:"上海", salary:"55", remark:"投资岗", type:"finance"},
+    {level:"60", company:"Scientech Reseaich/灵均投资/幻方量化/九坤投资等", city:"", salary:"55", remark:"", type:"finance"},
+    {level:"60", company:"万银资产", city:"杭州", salary:"55", remark:"投资经理", type:"finance"},
+    {level:"60", company:"疆亘资本", city:"北京", salary:"30-35", remark:"投资岗", type:"finance"},
+    {level:"60", company:"天津银行-天津支行/分行", city:"天津", salary:"40-50", remark:"管培生（支行40-分行50）", type:"finance"},
+    {level:"60", company:"云启资本(双币基金)", city:"北京/上海", salary:"50-55", remark:"投资岗方向", type:"finance"},
+    {level:"60", company:"盈新发展（上市公司）", city:"北京", salary:"40-45", remark:"投资经理岗位", type:"finance"},
+    {level:"60", company:"经纬创投", city:"北京/上海", salary:"70", remark:"投资分析师岗", type:"finance"},
+    {level:"60", company:"海邦投资", city:"杭州", salary:"55", remark:"投资经理（医疗器械方向）", type:"finance"},
+    {level:"60", company:"方广资本（双币基金）", city:"上海/深圳", salary:"55", remark:"投资经理", type:"finance"},
+    {level:"60", company:"嘉实基金", city:"北京", salary:"105", remark:"科技产品经理、量化策略分析师", type:"finance"},
+    {level:"60", company:"无锡创投下属子公司（国联金投致源）/锡创投", city:"北京", salary:"45", remark:"投资岗", type:"finance"},
+    {level:"60", company:"天鹰资本", city:"北京", salary:"50", remark:"投资岗/硬科技方向40", type:"finance"},
+    {level:"60", company:"中国旅游集团投资和资产管理有限公司", city:"北京", salary:"45", remark:"基金管理岗", type:"finance"},
+    {level:"60", company:"追觅创投", city:"上海", salary:"50-55", remark:"量化交易岗/CVC战投岗", type:"finance"},
+    {level:"60", company:"银河证券总部", city:"北京", salary:"65", remark:"FICC业务总部-固收交易员", type:"finance"},
+    {level:"60", company:"万信融智（工信部下属基金）", city:"北京", salary:"50", remark:"投资岗", type:"finance"},
+    {level:"60", company:"华夏基金", city:"北京", salary:"70", remark:"研究员/工程师/产品经理/分析师等多岗位", type:"finance"},
+    {level:"60", company:"中信证券-营业部", city:"石家庄/唐山", salary:"25", remark:"业务岗", type:"finance"},
+    {level:"60", company:"西南证券", city:"重庆", salary:"40", remark:"研究、风控、后台岗", type:"finance"},
+    {level:"60", company:"浦发香港分行/浦银国际", city:"香港", salary:"65", remark:"管培生/信息科技类岗位", type:"finance"},
+    {level:"60", company:"兴业金租", city:"北京/全国", salary:"40", remark:"管培生/客户经理岗/电站评估岗/资产管理岗（航空/航运业务方向）/法律事务岗/研发管理岗/风险审查岗", type:"finance"},
+    {level:"60", company:"汇天诚基金", city:"北京/香港", salary:"30", remark:"投资经理助理", type:"finance"},
+    {level:"60", company:"银河证券", city:"北京", salary:"20", remark:"营业部-运营岗", type:"finance"},
+    {level:"60", company:"北京方信资本", city:"北京", salary:"35", remark:"投资岗", type:"finance"},
+    {level:"60", company:"首程控股（首钢集团下属上市公司）", city:"北京", salary:"40", remark:"战投部-投资岗", type:"finance"},
+    {level:"60", company:"祥峰投资（淡马锡控股）", city:"北京", salary:"35", remark:"投资岗", type:"finance"},
+    {level:"60", company:"新鼎资本", city:"北京", salary:"35", remark:"投资分析师", type:"finance"},
+    {level:"60", company:"盛石资本（国资PE）", city:"上海", salary:"65", remark:"投资岗", type:"finance"},
+    {level:"60", company:"奇点资本", city:"北京", salary:"50-60", remark:"投资岗", type:"finance"},
+    {level:"60", company:"神骐资本（58同城旗下）", city:"北京", salary:"40", remark:"投资岗", type:"finance"},
+    {level:"60", company:"商汤科技", city:"北京/上海", salary:"60", remark:"投资岗", type:"finance"},
+    {level:"60", company:"诺德基金", city:"上海", salary:"45", remark:"专业相关岗位", type:"finance"},
+    {level:"60", company:"九颂山河基金", city:"上海", salary:"55-65", remark:"投资岗", type:"finance"},
+    {level:"60", company:"申万宏源", city:"深圳", salary:"45-55", remark:"机构业务分析师", type:"finance"},
+    {level:"60", company:"财达证券", city:"上海/深圳", salary:"45", remark:"债券承揽、承做岗、股权承揽、保代人、股权承做", type:"finance"},
+    {level:"60", company:"青英汇资本", city:"北京", salary:"35", remark:"投资岗（实习转正）", type:"finance"},
+    {level:"60", company:"国富量子", city:"香港", salary:"55", remark:"一级投/融资相关岗位、二级投资/研究/交易相关岗位、AI技术岗等", type:"finance"},
+    {level:"60", company:"长江证券/海通证券", city:"香港", salary:"55", remark:"投行/研究岗方向", type:"finance"},
+    {level:"60", company:"汇丰银行/渣打银行", city:"香港", salary:"50", remark:"", type:"finance"},
+    {level:"60", company:"富域资本", city:"香港", salary:"30", remark:"投融资岗", type:"finance"},
+    {level:"60", company:"鼎辉投资", city:"北京", salary:"70-80", remark:"投资岗", type:"finance"},
+    {level:"60", company:"老鹰基金", city:"北京", salary:"40-50", remark:"投资岗", type:"finance"},
+    {level:"60", company:"天鹰资本", city:"北京", salary:"40", remark:"投资岗（硬科技方向）", type:"finance"},
+    {level:"60", company:"金浦投资", city:"上海", salary:"65-75", remark:"投资岗", type:"finance"},
+    {level:"60", company:"东方富海", city:"深圳/北京", salary:"60", remark:"投资岗", type:"finance"},
+    {level:"60", company:"弘卓资本", city:"北京", salary:"55-65", remark:"投资岗", type:"finance"},
+    {level:"60", company:"CPE 源峰", city:"北京", salary:"70-80", remark:"投资岗", type:"finance"},
+    {level:"60", company:"聚宽投资", city:"北京/广州/深圳/香港", salary:"35-40", remark:"AI算法专家/AI算法研究员/基本面量化专家/量化研究员等", type:"finance"},
+    {level:"60", company:"中信期货总部", city:"上海", salary:"40", remark:"机构业务岗", type:"finance"},
+    {level:"60", company:"琥珀资本（深信服CVC）", city:"深圳/北京", salary:"40-45", remark:"投资岗（实习留用/全职）", type:"finance"},
+    {level:"60", company:"友财投资", city:"北京", salary:"30", remark:"投资岗", type:"finance"},
+    {level:"60", company:"国石智达", city:"北京", salary:"50", remark:"", type:"finance"},
+    {level:"60", company:"碧澄能源", city:"广州", salary:"50-55", remark:"投资助理", type:"finance"},
+    {level:"60", company:"招商致远", city:"北京/深圳", salary:"60-65", remark:"投资岗/战略业务岗/会计岗", type:"finance"},
+    {level:"60", company:"首都大健康产业基金", city:"北京", salary:"45-55", remark:"投资岗/投资运营/基金运营/投后岗等", type:"finance"},
+    {level:"60", company:"华盖资本", city:"北京", salary:"45-55", remark:"投资岗/IR岗", type:"finance"},
+    {level:"60", company:"汉能投资", city:"北京/上海/深圳", salary:"55-65", remark:"投资岗/IR岗", type:"finance"},
+    {level:"60", company:"中再保险资管", city:"北京", salary:"65-75", remark:"专业相关岗", type:"finance"},
+    {level:"60", company:"深圳诺辉资本", city:"深圳", salary:"35", remark:"", type:"finance"},
+    {level:"60", company:"中行辽宁省分行", city:"辽宁", salary:"55", remark:"", type:"finance"},
+    {level:"60", company:"广州趣道资产", city:"广州", salary:"45", remark:"投资岗/投资者关系岗", type:"finance"},
+    {level:"60", company:"惠每资本", city:"上海/杭州/金华", salary:"60", remark:"研究员（分析师）/项目经理（投后管理）", type:"finance"},
+    {level:"60", company:"易凯资本", city:"北京/上海", salary:"45", remark:"投资岗方向", type:"finance"},
+    {level:"60", company:"汉理资本", city:"上海", salary:"40-45", remark:"投资岗", type:"finance"},
+    {level:"60", company:"康辛资本", city:"上海", salary:"45", remark:"投资岗", type:"finance"},
+    {level:"60", company:"民生证券", city:"深圳", salary:"65", remark:"投行岗（IBD）", type:"finance"},
+    {level:"60", company:"阿尔法公社", city:"北京", salary:"55", remark:"投资岗", type:"finance"},
+    {level:"60", company:"美团集团或下属基金", city:"北京", salary:"70W", remark:"投资岗", type:"finance"},
+    {level:"60", company:"联储证券/国元证券/博星证券/国融证券", city:"北京/上海/深圳", salary:"45-50", remark:"投行/资管/自营/研究所等（以公招信息为准）", type:"finance"},
+    {level:"60", company:"盛世投资", city:"北京/上海/杭州/绍兴/南京/长沙", salary:"50-55", remark:"投资/投后运营", type:"finance"},
+    {level:"60", company:"华太证券私募子", city:"北京", salary:"85", remark:"投行分析师", type:"finance"},
+    {level:"60", company:"太平洋保险总部", city:"上海", salary:"65", remark:"交易员", type:"finance"},
+    {level:"60", company:"兴业证券", city:"上海", salary:"65", remark:"债券承做岗（又称债券执行）", type:"finance"},
+    {level:"60", company:"奥帕资本", city:"北京", salary:"60", remark:"投资分析师/投资经理", type:"finance"},
+    {level:"60", company:"西部证券", city:"成都", salary:"65", remark:"投行（实习留用）", type:"finance"},
+    {level:"60", company:"千方科技", city:"北京", salary:"50", remark:"投资分析师（实习留用）", type:"finance"},
+    {level:"60", company:"中石油集团昆仑资本", city:"北京", salary:"70", remark:"投资分析师", type:"finance"},
+    {level:"60", company:"中车资本控股", city:"北京", salary:"65", remark:"投资分析师", type:"finance"},
+    {level:"60", company:"同创伟业", city:"深圳", salary:"110W", remark:"投资岗", type:"finance"},
+    {level:"60", company:"中信私募（中信集团 CVC）", city:"北京", salary:"70-75", remark:"投资业务岗", type:"finance"},
+    {level:"60", company:"招商证券/国泰君安/申万宏源", city:"上海", salary:"80", remark:"投行部岗位", type:"finance"},
+    {level:"60", company:"松禾资本", city:"深圳/北京", salary:"75", remark:"投资岗", type:"finance"},
+    {level:"60", company:"方正和生", city:"北京/上海/合肥/长沙", salary:"65", remark:"投资岗", type:"finance"},
+
     // 非金融部分
-    {level:"60", company:"中行辽宁省分行", city:"辽宁", salary:"55", remark:""},
-    {level:"60", company:"九颂山河基金", city:"上海", salary:"55-65", remark:"投资岗"},
-    {level:"60", company:"广州趣道资产", city:"", salary:"45", remark:"投资岗/投资者关系岗"},
+    {level:"60", company:"中国储备粮管理集团及下属", city:"全国", salary:"50", remark:"简历面试定岗"},
+    {level:"60", company:"中核集团下属物业公司", city:"北京", salary:"30", remark:""},
+    {level:"60", company:"人社部能建中心/社会保障中心", city:"北京", salary:"35", remark:"培训管理岗/接待，挑人（有讲解经验.形象好）"},
+    {level:"60", company:"吉利汽车", city:"长江以南杭州、宁波", salary:"30", remark:"官网岗位，人选符合招聘需求"},
+    {level:"60", company:"中国电子科技集团下属-电科莱斯、二十八所", city:"南京", salary:"55", remark:"软件设计/总体论证/算法设计/软件开发"},
+    {level:"60", company:"中国电科十四所旗下国睿防务公司", city:"南京", salary:"55", remark:"反无人机雷达总体工程师"},
+    {level:"60", company:"中国航空工业集团下属南京航空工业宏光空降装备有限公司", city:"南京", salary:"55", remark:"技术岗"},
     {level:"60", company:"摩登天空", city:"", salary:"48", remark:""},
+    {level:"60", company:"康德学校/上海国际学校", city:"", salary:"48", remark:""},
     {level:"60", company:"北京服装学院", city:"北京", salary:"45", remark:""},
     {level:"60", company:"《家族企业》杂志", city:"", salary:"40-45", remark:""},
-    {level:"60", company:"康德学校/上海国际学校", city:"", salary:"48", remark:""},
 ];
+
+        function getCityTokens(city) {
+            if (!city) return [];
+            return city
+                .split(/[\/、,+]|及/)
+                .map(token => token.trim())
+                .filter(Boolean);
+        }
+
+        function populateCityFilter() {
+            const citySelect = document.getElementById('filterCity');
+            const citySet = new Set();
+
+            jobs.forEach(job => {
+                getCityTokens(job.city).forEach(city => citySet.add(city));
+            });
+
+            const cityOptions = Array.from(citySet).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN', { sensitivity: 'base' }));
+            cityOptions.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        }
 
         function renderTable(filteredJobs) {
             const tbody = document.getElementById('tableBody');
@@ -455,8 +526,8 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50 transition';
                     row.innerHTML = `
-                        <td class="p-4 font-medium ${levelColor}">${levelText}</td>
-                        <td class="p-4 font-medium text-slate-900">
+                        <td class="p-4 font-medium ${levelColor}" data-label="概率等级">${levelText}</td>
+                        <td class="p-4 font-medium text-slate-900" data-label="公司 / 单位">
                             <div class="flex items-center justify-between gap-3">
                                 <span class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">${job.company}</span>
                                 <div class="flex items-center gap-2">
@@ -466,9 +537,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="p-4 text-center">${job.city}</td>
-                        <td class="p-4 text-right font-semibold text-green-600">${job.salary}</td>
-                        <td class="p-4">${job.remark}</td>
+                        <td class="p-4 text-center" data-label="城市">${job.city}</td>
+                        <td class="p-4 text-right font-semibold text-green-600" data-label="薪资">${job.salary}</td>
+                        <td class="p-4" data-label="岗位 / 备注">${job.remark}</td>
                     `;
                     fragment.appendChild(row);
                 });
