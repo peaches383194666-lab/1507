@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>岗位供应概率列表</title>
+    <title>岗位供应概率列表 - 表格版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -48,12 +48,38 @@
         }
 
         .table-responsive table {
-            min-width: 720px;
+            width: 100%;
+            table-layout: fixed;
         }
 
         .table-responsive th,
         .table-responsive td {
-            white-space: nowrap;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .tab-btn.active {
+            background-color: #0f172a;
+            color: #fff;
+            border-color: #0f172a;
+        }
+
+        .search-card {
+            box-shadow: 0 20px 70px rgba(15, 23, 42, 0.08);
+        }
+
+        .fuzzy-search-input {
+            border-color: #c4b5fd;
+            background-color: #faf5ff;
+        }
+
+        .general-search-input {
+            border-color: #fcd34d;
+            background-color: #fffbeb;
+        }
+
+        .search-label {
+            color: #334155;
         }
 
         @media (max-width: 768px) {
@@ -121,33 +147,37 @@
                 精选岗位信息、简洁筛选体验，用更沉稳的视觉让数据展示更专业。
             </p>
         </div>
+        <div class="flex flex-wrap justify-center gap-3 mb-8">
+            <button id="tabAllJobs" onclick="switchTab('allJobs')" class="tab-btn inline-flex items-center justify-center px-5 py-3 rounded-2xl text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-200 shadow-sm transition">岗位供应</button>
+            <button id="tabResources" onclick="switchTab('resources')" class="tab-btn inline-flex items-center justify-center px-5 py-3 rounded-2xl text-sm font-semibold text-slate-600 bg-slate-100 border border-slate-200 shadow-sm transition">金融资源汇总</button>
+        </div>
 
         <!-- 全部岗位 Tab -->
         <div id="contentAllJobs" class="tab-content active">
         <!-- 筛选栏 -->
-        <div class="bg-white p-6 rounded-[32px] shadow-sm mb-8 border border-slate-200 sm:p-8">
+        <div class="bg-white p-6 rounded-[32px] search-card mb-8 border border-slate-200 sm:p-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div>
-                    <div class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">智能筛选</div>
-                    <div class="mt-2 text-xl font-semibold text-slate-950">快速定位目标岗位</div>
+                    <div class="text-sm font-semibold uppercase tracking-[0.26em] text-slate-500">智能筛选</div>
+                    <div class="mt-2 text-2xl font-semibold text-slate-950">快速定位目标岗位</div>
                 </div>
-                <button onclick="clearFilters()" class="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl font-medium shadow-sm transition duration-200">
+                <button onclick="clearFilters()" class="inline-flex items-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl font-medium shadow-lg transition duration-200">
                     <i class="fas fa-undo"></i>
                     清空筛选
                 </button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
                 <div class="space-y-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">岗位类型</label>
-                    <select id="filterType" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                    <label class="block text-[11px] font-semibold tracking-[0.24em] text-slate-400 uppercase">岗位类型</label>
+                    <select id="filterType" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
                         <option value="">全部类型</option>
                         <option value="finance">金融</option>
                         <option value="other">非金融</option>
                     </select>
                 </div>
                 <div class="space-y-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">成功概率</label>
-                    <select id="filterLevel" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                    <label class="block text-[11px] font-semibold tracking-[0.24em] text-slate-400 uppercase">成功概率</label>
+                    <select id="filterLevel" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
                         <option value="">全部概率</option>
                         <option value="100">非常稳：接近100%</option>
                         <option value="80">很稳：80%以上</option>
@@ -155,22 +185,21 @@
                     </select>
                 </div>
                 <div class="space-y-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">工作城市</label>
-                    <select id="filterCity" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                    <label class="block text-[11px] font-semibold tracking-[0.24em] text-slate-400 uppercase">工作城市</label>
+                    <select id="filterCity" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
                         <option value="">全部城市</option>
                     </select>
                 </div>
                 <div class="space-y-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">最低薪资</label>
-                    <input id="minSalary" type="number" placeholder="最低薪资" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                    <label class="block text-[11px] font-semibold tracking-[0.24em] text-slate-400 uppercase">薪资范围</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input id="minSalary" type="number" placeholder="最低" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                        <input id="maxSalary" type="number" placeholder="最高" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                    </div>
                 </div>
-                <div class="space-y-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">最高薪资</label>
-                    <input id="maxSalary" type="number" placeholder="最高薪资" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
-                </div>
-                <div class="space-y-2 md:col-span-2 min-w-0">
-                    <label class="block text-[10px] font-semibold tracking-[0.24em] text-slate-400 uppercase">关键词搜索</label>
-                    <input id="searchInput" type="text" placeholder="搜索公司、岗位、备注" class="w-full px-3 py-2 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
+                <div class="space-y-2 xl:col-span-2 min-w-0">
+                    <label class="block text-[11px] font-semibold tracking-[0.24em] text-slate-400 uppercase">关键词搜索</label>
+                    <input id="searchInput" type="text" placeholder="搜索公司、岗位、备注" class="w-full px-4 py-3 border border-slate-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent transition bg-slate-50 text-slate-900 min-w-0">
                 </div>
             </div>
         </div>
@@ -208,7 +237,82 @@
                 <div class="mt-1 text-sm text-slate-500">精选推荐</div>
             </div>
         </div>
+        </div>
         </div><!-- 关闭 contentAllJobs -->
+        <div id="contentResources" class="tab-content">
+            <div class="bg-white p-6 rounded-[32px] search-card mb-8 border border-slate-200 sm:p-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <div>
+                        <div class="text-sm font-semibold uppercase tracking-[0.26em] text-slate-500">金融类企业资源汇总</div>
+                        <div class="mt-2 text-2xl font-semibold text-slate-950">PE / VC / FA 主投方向与地点</div>
+                    </div>
+                    <button onclick="clearResourcesSearch()" class="inline-flex items-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl font-medium shadow-lg transition duration-200">
+                        <i class="fas fa-undo"></i>
+                        清空搜索
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                        <p class="text-slate-500 leading-7">本表汇总金融类企业资源的主投方向、管理规模和总部/分公司地点。可按赛道、地区或关键词快速筛选，帮助更高效定位目标企业。</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <div class="text-[11px] font-semibold tracking-[0.24em] uppercase search-label">赛道 / 方向</div>
+                                    <div class="text-xs text-slate-500">模糊匹配主投方向关键词</div>
+                                </div>
+                                <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-700 px-3 py-1 text-xs font-medium">模糊搜索</span>
+                            </div>
+                            <input id="resourceFocusInput" type="text" placeholder="模糊搜索赛道/方向" class="w-full px-4 py-3 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-transparent transition text-slate-900 fuzzy-search-input">
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <div class="text-[11px] font-semibold tracking-[0.24em] uppercase search-label">地区</div>
+                                    <div class="text-xs text-slate-500">模糊匹配城市 / 地点</div>
+                                </div>
+                                <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-700 px-3 py-1 text-xs font-medium">模糊搜索</span>
+                            </div>
+                            <input id="resourceLocationInput" type="text" placeholder="模糊搜索地点" class="w-full px-4 py-3 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-transparent transition text-slate-900 fuzzy-search-input">
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <div class="text-[11px] font-semibold tracking-[0.24em] uppercase search-label">通用搜索</div>
+                                <div class="text-xs text-slate-500">搜索企业、主投方向、地点、规模</div>
+                            </div>
+                            <span class="inline-flex items-center rounded-full bg-amber-100 text-amber-700 px-3 py-1 text-xs font-medium">快速定位</span>
+                        </div>
+                        <input id="resourceSearchInput" type="text" placeholder="搜索企业、方向、地点" class="w-full px-4 py-3 border rounded-3xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-transparent transition text-slate-900 general-search-input">
+                    </div>
+                    <div class="flex items-center justify-end mt-1">
+                        <label for="resourceSort" class="text-xs text-slate-500 mr-3">按管理规模排序</label>
+                        <select id="resourceSort" class="px-3 py-2 border border-slate-200 rounded-full bg-white text-sm focus:outline-none">
+                            <option value="default">默认</option>
+                            <option value="desc">降序（从大到小）</option>
+                            <option value="asc">升序（从小到大）</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-[32px] shadow-sm overflow-hidden border border-slate-200">
+                <div class="table-responsive">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-950 text-white">
+                            <tr>
+                                <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">企业</th>
+                                <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">主投赛道 / 方向</th>
+                                <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">管理规模</th>
+                                <th class="p-4 text-left text-xs font-semibold tracking-[0.18em] uppercase">总部 / 分公司地点</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resourceTableBody" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -223,7 +327,11 @@
 
             // 初始化数据
             renderTable(jobs);
+            // 记录资源原始顺序索引，用于“默认”排序
+            resources.forEach((r, i) => r._index = i);
+            renderResourcesTable(resources);
             updateStats();
+            switchTab('allJobs');
 
             // 添加输入框动画效果
             const inputs = document.querySelectorAll('input, select');
@@ -242,8 +350,8 @@
             // 隐藏所有tab内容
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('text-blue-600', 'border-b-4', 'border-blue-600', 'bg-blue-50');
-                el.classList.add('text-gray-600');
+                el.classList.remove('text-blue-600', 'border-b-4', 'border-blue-600', 'bg-blue-50', 'border-blue-200', 'border-slate-200', 'bg-slate-100');
+                el.classList.add('text-gray-600', 'bg-slate-100', 'border-slate-200');
             });
 
             // 显示选中的tab
@@ -251,6 +359,10 @@
                 document.getElementById('contentAllJobs').classList.add('active');
                 document.getElementById('tabAllJobs').classList.add('text-blue-600', 'border-b-4', 'border-blue-600', 'bg-blue-50');
                 document.getElementById('tabAllJobs').classList.remove('text-gray-600');
+            } else if (tabName === 'resources') {
+                document.getElementById('contentResources').classList.add('active');
+                document.getElementById('tabResources').classList.add('text-blue-600', 'border-b-4', 'border-blue-600', 'bg-blue-50');
+                document.getElementById('tabResources').classList.remove('text-gray-600');
             }
         }
 
@@ -485,6 +597,137 @@
     {level:"60", company:"《家族企业》杂志", city:"", salary:"40-45", remark:""},
 ];
 
+        const resources = [
+            {name: "松禾资本", focus: "数字科技、精准医疗、创新材料", aum: "超 180 亿元", location: "总部深圳；北京、上海、广州等"},
+            {name: "方正和生（券商私募子）", focus: "新一代信息技术、医疗健康、消费、先进制造", aum: "近 200 亿元", location: "总部北京，分公司上海、合肥、长沙"},
+            {name: "阿尔法公社（创投）", focus: "企业服务、人工智能、金融科技、区块链、消费", aum: "约 5 亿元", location: "总部北京"},
+            {name: "庚辛资本（FA）", focus: "机器人、低空经济（融资并购顾问）", aum: "约 152 亿元", location: "上海"},
+            {name: "汉理资本", focus: "科创（A/B/C/D）、新消费、新医疗", aum: "约 16 亿元", location: "总部上海"},
+            {name: "惠每资本（双币&医疗健康）", focus: "生物医药、医疗器械、诊断、医疗服务", aum: "约 50 亿元", location: "上海"},
+            {name: "美团集团或下属基金", focus: "本地生活、科技、消费、企业服务", aum: "约 170 亿元", location: "总部北京"},
+            {name: "华京投资（中国电子科技集团控股）", focus: "大数据、人工智能、新能源、智能制造、医疗大健康", aum: "约 70 亿元", location: "总部上海"},
+            {name: "盛世投资", focus: "集成电路、新一代信息技术、医疗健康、先进制造、新能源新材料（母基金+S 基金+直投）", aum: "超 1000 亿元", location: "总部北京；上海"},
+            {name: "中车资本控股", focus: "先进制造、轨道交通产业链、通信/半导体、新能源", aum: "基金规模超 300 亿元", location: "总部北京"},
+            {name: "中石油集团昆仑资本", focus: "新能源、新材料、节能环保、智能制造、CCUS", aum: "注册资本 100 亿元", location: "北京"},
+            {name: "千方科技", focus: "AIoT、智慧交通、车路协同", aum: "不适用（上市公司战投部）", location: "总部北京"},
+            {name: "奥帕资本", focus: "低空经济、人工智能、新基建、新能源", aum: "旗下已备案单支基金规模达 10 亿元", location: "总部珠海（横琴），北京分公司"},
+            {name: "华泰紫金（华 Tai 证券私募子）", focus: "股权投资、并购（聚焦科技、医疗、先进制造）", aum: "超过 600 亿元", location: "总部北京（华泰证券全资）"},
+            {name: "中信私募（中信集团 CVC）", focus: "高端装备、新材料、新能源、新一代信息技术、生物技术", aum: "中信股权投资联盟总规模超 3200 亿元", location: "总部北京"},
+            {name: "首都大健康产业基金", focus: "医疗健康（专精特新、创新药、器械等）", aum: "约 30 亿元", location: "总部北京"},
+            {name: "华盖资本", focus: "医疗健康、科技", aum: "近 300 亿元", location: "总部北京"},
+            {name: "中再保险资管", focus: "保险资金运用（固定收益、权益、另类投资）", aum: "受托管理资产超 4500 亿元", location: "总部北京"},
+            {name: "中国投融资担保股份有限公司全资子公司", focus: "普惠金融、科技融资担保、线上化业务", aum: "母公司累计担保总额达 7,345 亿元；子公司管理规模未公开", location: "北京"},
+            {name: "聚宽投资", focus: "量化私募（AI 驱动的股票、CTA 等）", aum: "超百亿元", location: "总部北京"},
+            {name: "汉能投资（双币基金）", focus: "财务顾问（FA）+私募股权投资（消费、TMT、医疗）", aum: "管理私募股权基金超 100 亿元", location: "总部北京；上海"},
+            {name: "山东辉石私募基金有限公司（山东高速投资控股旗下）", focus: "新型储能/新能源、基础设施、汽车新能源产业链、战略新兴产业、低空经济、上市公司投资", aum: "山东高速投资控股合并资产 618.81 亿元；旗下山高（烟台）速合投资认缴 70 亿元；辉石私募基金管理规模未单独披露", location: "上海"},
+            {name: "招商致远", focus: "成长基金、创投基金、产业母基金、基础设施 REITs、特殊机会基金", aum: "累计超 500 亿元", location: "总部深圳"},
+            {name: "弘卓资本", focus: "集成电路、人工智能、高端装备、新能源、TMT、新消费", aum: "累计近 200 亿元", location: "总部北京"},
+            {name: "东方富海（OFC）", focus: "信息技术、新能源新材料、健康医疗、文化消费", aum: "超 350 亿元", location: "总部深圳；北京、上海有办公室"},
+            {name: "元航资本", focus: "商业航天、高端装备/智能制造、医工交叉/高端医疗科技、新一代信息技术、新材料、新能源/碳中和", aum: "约 6 亿元", location: "总部北京"},
+            {name: "老鹰基金", focus: "移动互联网、人工智能、机器人、区块链、生物科技、消费升级", aum: "超 30 亿元", location: "总部北京；上海"},
+            {name: "金浦投资", focus: "半导体、医疗健康、先进制造、金融科技", aum: "超 600 亿元", location: "总部上海"},
+            {name: "新鼎资本", focus: "新能源汽车、芯片半导体、人工智能、商业航天、生物医疗", aum: "超 90 亿元", location: "总部北京"},
+            {name: "友财投资", focus: "半导体、泛半导体产业链、数字化、AI、IT 服务", aum: "约 20-30 亿元", location: "总部北京"},
+            {name: "富域资本", focus: "企业融资、资本市场（香港 6 号牌）", aum: "未公开", location: "香港"},
+            {name: "国富量子创新（上市公司 00290.HK）", focus: "量子科技、数字资产、科创+金融+贸易", aum: "未公开", location: "香港"},
+            {name: "菁英汇资本", focus: "低空经济、高端装备、新能源、数字经济", aum: "超 10 亿元", location: "总部北京"},
+            {name: "轩元资本", focus: "新能源汽车全产业链（电动化、智能化：新材料、车规半导体、核心零部件、智能座舱、智能驾驶）", aum: "超 10 亿元", location: "总部上海"},
+            {name: "枫承资本", focus: "人工智能、具身智能、机器人、消费/能源/供应链出海", aum: "未公开", location: "北京、上海、深圳"},
+            {name: "北京方信资本", focus: "信息技术（初创期、成长期）", aum: "约 10 亿元", location: "总部北京（清华科技园）"},
+            {name: "首程控股-战投部", focus: "停车资产管理、产业空间管理、REITs、股权投资", aum: "未公开", location: "总部北京（香港上市）"},
+            {name: "东方行知基金", focus: "前沿科技、硬科技、消费收并购", aum: "未公开", location: "总部杭州"},
+            {name: "瑞力投资", focus: "文化教育、资产管理、医疗健康、信息科技", aum: "超 130 亿元", location: "总部上海"},
+            {name: "中信建投利信资本", focus: "特定客户资产管理（非上市股权、债权等）", aum: "未单独披露", location: "总部北京"},
+            {name: "复星锐正资本（复星集团下属基金）", focus: "AI、机器人、产业数字化、出海、大消费", aum: "超百亿元", location: "总部上海；北京、深圳"},
+            {name: "盛石资本（国资 PE，上海国盛(集团)子公司）", focus: "新医疗、新智造、新能源、新一代信息技术（长三角）", aum: "超 200 亿元", location: "总部上海"},
+            {name: "琥珀资本（深信服 CVC）", focus: "网络安全、云计算、AI、数字化转型升级、机器人", aum: "未公开", location: "总部深圳"},
+            {name: "奇点资本", focus: "高端装备制造、新一代信息技术、生物技术、新能源、新材料、军民融合", aum: "超 200 亿元", location: "总部北京"},
+            {name: "神骐资本（58 同城旗下）", focus: "产业互联网、科技、新消费、人力资源、企业服务、新能源、先进制造", aum: "超 160 亿元", location: "总部北京"},
+            {name: "诺德基金", focus: "公募基金（权益、固收、量化、FOF）", aum: "公募资产超 400 亿（2024）", location: "总部上海"},
+            {name: "云启资本（双币基金）", focus: "云计算与大数据、AI、智能硬件、先进制造、企业 SaaS", aum: "超 100 亿元", location: "总部上海；北京有办公室"},
+            {name: "盈新发展（上市公司）", focus: "文化旅游、房地产", aum: "不适用", location: "总部北京"},
+            {name: "建信天然资本", focus: "智能制造、新能源新材料、生物医疗、智能数字化", aum: "依托建行系，累计规模超千亿元", location: "总部北京"},
+            {name: "商汤科技-战投部", focus: "AI（计算机视觉、大模型、智能汽车等）", aum: "不适用", location: "总部上海、北京、深圳等"},
+            {name: "经纬创投", focus: "新技术、硬科技、产业数字化、医疗、前沿科技、新消费", aum: "超 700 亿元", location: "总部北京；上海、香港"},
+            {name: "海邦投资", focus: "生命健康、生物医疗、数字经济、新材料、高端制造", aum: "超 75 亿元", location: "总部杭州"},
+            {name: "方广资本（双币基金）", focus: "半导体、高端制造、云计算、AI、大数据、企业服务", aum: "近 70 亿元", location: "总部上海"},
+            {name: "无锡创投下属子公司（国联金投致源）", focus: "半导体、新一代信息技术、医疗器械、医疗健康、新能源新材料、先进制造", aum: "约 200 亿元", location: "总部无锡"},
+            {name: "天鹰资本", focus: "工业互联网、大安全、芯片半导体、碳中和（科技制造）", aum: "超 40 亿元", location: "总部北京"},
+            {name: "追觅创投", focus: "泛机器人产业链（上游硬件、机器人软件、工业机器人、服务机器人）", aum: "未公开", location: "总部上海（追觅科技旗下）"},
+            {name: "万信融智（工信部中小企业发展促进中心下属基金）", focus: "人工智能、新能源、新材料、半导体、智能制造、工业互联网", aum: "未公开", location: "总部北京"},
+            {name: "启迪控股下属子基金（清华系）", focus: "科技孵化、硬科技、战略新兴产业", aum: "100 亿元人民币（管理及共同管理的私募股权投资基金）", location: "总部北京"},
+            {name: "疆亘资本", focus: "半导体、大数据与 AI、新能源新材料、先进制造、医疗健康、特殊资产", aum: "约 200 亿元", location: "总部北京"},
+            {name: "深圳前海力汇基金", focus: "先进制造、新能源资产、文旅、保险资金投资", aum: "逾百亿元", location: "总部深圳"},
+            {name: "基石创投", focus: "轨道交通、信息技术、先进制造", aum: "超 30 亿元", location: "总部北京"},
+            {name: "黑蚁资本", focus: "消费产业", aum: "约 100 亿元", location: "总部上海"},
+            {name: "诺辉资本", focus: "新能源汽车、智能制造、5G 通讯、物联网、新材料等领域", aum: "超 30 亿元", location: "深圳、上海"},
+            {name: "光源资本", focus: "FA（私募融资、并购重组、资产管理）", aum: "2.5 亿美元（4 支私募股权投资基金）", location: "北京、上海、深圳"},
+            {name: "南京峰岭股权投资基金管理有限公司", focus: "先进装备制造（长三角 PE/VC）", aum: "超 20 亿元", location: "总部南京"},
+            {name: "德福资本", focus: "医疗健康", aum: "约 340 亿元", location: "总部北京"},
+            {name: "北京恒业元朔投资有限公司", focus: "光电产业、新一代信息技术、新材料、高端制造、生物医药", aum: "0-5 亿元", location: "总部北京"},
+            {name: "首信资本", focus: "资产管理、投资银行、私募股权投资", aum: "未公开", location: "香港"},
+            {name: "杭州中科神光股权投资有限公司", focus: "光学、硬科技（杭州光机所旗下）", aum: "超 12 亿元（在管基金规模）", location: "总部杭州"},
+            {name: "北京未来科学城集团有限公司", focus: "科技金融、产业投资、城市运营、一级开发", aum: "集团总资产约 913 亿元；旗下母基金规模 10 亿元", location: "总部北京"},
+            {name: "易凯资本（FA）", focus: "TMT、消费、健康（投行+资产管理）", aum: "30 亿元+", location: "总部北京；上海"},
+            {name: "凯联资本", focus: "私募股权、地产投资、母基金", aum: "超过 150 亿元", location: "总部北京"},
+            {name: "中夏资本（国资 PE 合伙人创业公司）", focus: "新一代信息技术、高端装备、生物医药、新材料、新能源", aum: "未公开", location: "总部北京"},
+            {name: "盛山资本", focus: "消费、医疗健康、教育、金融科技", aum: "超 20 亿元", location: "总部上海"},
+            {name: "正海资本", focus: "高科技、高成长、创新型企业（未明确细分）", aum: "超 80 亿元", location: "总部上海"},
+            {name: "溥泓资本", focus: "数字经济", aum: "约 10 亿元", location: "总部北京"},
+            {name: "天启资本", focus: "新材料、半导体、传感器、电气化系统（航天航海、新能源汽车、国防等）", aum: "约 20 亿元", location: "北京、无锡、上海"},
+            {name: "浙江机器人产业投资基金", focus: "机器人、智能制造、产业投资", aum: "旗下单支基金出资额 2.56 亿元；整体规模未公开", location: "总部宁波"},
+            {name: "梅花创投", focus: "新能源、半导体、军工、数字化、智能制造、商业航天", aum: "约 100 亿元+1 亿美元", location: "总部北京"},
+            {name: "同创伟业", focus: "科技、医疗、消费（全阶段投资）", aum: "超 350 亿元", location: "总部深圳；北京"},
+            {name: "天壹资本", focus: "文化体育、TMT、医疗健康", aum: ">150 亿元", location: "总部北京；上海"},
+            {name: "博原资本", focus: "可持续交通、智能制造及物联网、AI、半导体、碳中和", aum: "未公开", location: "总部上海"},
+            {name: "启明创投", focus: "科技及消费（T&C）、医疗健康", aum: "95 亿美元", location: "上海、北京、苏州、香港、新加坡"},
+            {name: "IDG", focus: "科技、先进制造/新能源、消费、大健康", aum: "超 200 亿美元", location: "总部北京；波士顿、香港、上海、深圳"},
+            {name: "鼎晖投资（CDH）", focus: "私募股权、创新与成长、地产、夹层、证券投资、财富管理", aum: "超 1380 亿元", location: "总部北京；上海、深圳、香港"},
+            {name: "CPE 源峰", focus: "科技与工业、医疗与健康、消费、基础设施", aum: "超 1500 亿元", location: "总部北京；上海、香港"},
+            {name: "中金公司", focus: "券商综合业务（投行、资管、研究、私募股权等）", aum: "总资产超 6000 亿元", location: ""},
+        ];
+
+        // 解析管理规模字符串，尝试返回以“亿元”为单位的数值，无法解析返回 NaN
+        function parseAUM(aumStr) {
+            if (!aumStr) return NaN;
+            const s = String(aumStr).replace(/[，,]/g, '').toLowerCase();
+            const numMatch = s.match(/(\d+(?:\.\d+)?)/);
+            if (!numMatch) return NaN;
+            let num = parseFloat(numMatch[0]);
+
+            // 若包含“万”或 w，认为单位为万，换算为亿元
+            if (s.includes('万') || s.includes('w')) {
+                return num * 0.0001;
+            }
+            // 若包含“亿”，直接返回数值（以亿元为单位）
+            if (s.includes('亿')) {
+                return num;
+            }
+            // 未标注单位时，保守假设为亿元
+            return num;
+        }
+
+        // 根据当前排序选项对资源数组进行排序，返回新的数组副本
+        function applyResourcesSort(list) {
+            const sortOpt = (document.getElementById('resourceSort') || {}).value || 'default';
+            const copy = list.slice();
+            if (sortOpt === 'default') {
+                // 按原始索引恢复顺序（如有记录）
+                copy.sort((a, b) => (a._index || 0) - (b._index || 0));
+                return copy;
+            }
+            copy.sort((a, b) => {
+                const va = parseAUM(a.aum);
+                const vb = parseAUM(b.aum);
+                // 将无法解析的值放到末尾
+                if (isNaN(va) && isNaN(vb)) return 0;
+                if (isNaN(va)) return 1;
+                if (isNaN(vb)) return -1;
+                return (va - vb) * (sortOpt === 'desc' ? -1 : 1);
+            });
+            return copy;
+        }
+
         function getCityTokens(city) {
             if (!city) return [];
             return city
@@ -549,6 +792,57 @@
             updateStats(filteredJobs.length);
         }
 
+        function renderResourcesTable(filteredResources) {
+            const tbody = document.getElementById('resourceTableBody');
+            tbody.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+
+            if (filteredResources.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" class="p-12 text-center text-gray-500 text-lg">没有找到匹配的资源</td>`;
+                fragment.appendChild(row);
+            } else {
+                filteredResources.forEach(resource => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition';
+                    row.innerHTML = `
+                        <td class="p-4 font-medium text-slate-900" data-label="企业">${resource.name}</td>
+                        <td class="p-4 text-slate-700" data-label="主投赛道 / 方向">${resource.focus}</td>
+                        <td class="p-4 text-slate-700" data-label="管理规模">${resource.aum}</td>
+                        <td class="p-4 text-slate-700" data-label="总部 / 分公司地点">${resource.location}</td>
+                    `;
+                    fragment.appendChild(row);
+                });
+            }
+
+            tbody.appendChild(fragment);
+        }
+
+        function filterResourcesTable() {
+            const keyword = document.getElementById('resourceSearchInput').value.toLowerCase().trim();
+            const focusQuery = document.getElementById('resourceFocusInput').value.toLowerCase().trim();
+            const locationQuery = document.getElementById('resourceLocationInput').value.toLowerCase().trim();
+
+            const filtered = resources.filter(resource => {
+                const combinedText = (resource.name + ' ' + resource.focus + ' ' + resource.aum + ' ' + resource.location).toLowerCase();
+                const focusText = resource.focus.toLowerCase();
+                const locationText = resource.location.toLowerCase();
+                const keywordMatch = keyword ? combinedText.includes(keyword) : true;
+                const focusMatch = focusQuery ? focusText.includes(focusQuery) : true;
+                const locationMatch = locationQuery ? locationText.includes(locationQuery) : true;
+                return keywordMatch && focusMatch && locationMatch;
+            });
+            const sorted = applyResourcesSort(filtered);
+            renderResourcesTable(sorted);
+        }
+
+        function clearResourcesSearch() {
+            document.getElementById('resourceSearchInput').value = '';
+            document.getElementById('resourceFocusInput').value = '';
+            document.getElementById('resourceLocationInput').value = '';
+            renderResourcesTable(resources);
+        }
+
         function updateStats(filteredCount) {
             document.getElementById('filteredCount').textContent = filteredCount;
             document.getElementById('totalCount').textContent = jobs.length;
@@ -598,7 +892,7 @@
             }
 
             if (level) filtered = filtered.filter(j => j.level === level);
-            if (city) filtered = filtered.filter(j => j.city.includes(city));
+            if (city) filtered = filtered.filter(j => getCityTokens(j.city).includes(city));
             
             // 价格范围筛选
             filtered = filtered.filter(j => {
@@ -633,6 +927,12 @@
         document.getElementById('minSalary').addEventListener('input', filterTable);
         document.getElementById('maxSalary').addEventListener('input', filterTable);
         document.getElementById('searchInput').addEventListener('input', filterTable);
+        document.getElementById('resourceSearchInput').addEventListener('input', filterResourcesTable);
+        document.getElementById('resourceFocusInput').addEventListener('input', filterResourcesTable);
+        document.getElementById('resourceLocationInput').addEventListener('input', filterResourcesTable);
+        // 资源排序下拉
+        const resourceSortEl = document.getElementById('resourceSort');
+        if (resourceSortEl) resourceSortEl.addEventListener('change', filterResourcesTable);
 
         // 初始化显示：默认无筛选，全部岗位展示
         clearFilters();
